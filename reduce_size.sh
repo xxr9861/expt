@@ -1,48 +1,5 @@
+#! /bin/bash
 
-# ~/removespaces
-
-# ls | parallel /usr/bin/convert {} -strip -quality 50% {}.jpg && rm {}
-
-# #finally this worked
-
-
-
-
-# # # #ls *.png.jpg | xargs -n 1 -I{} mv {} $(echo {} | sed s/png.jpg/png/)
-
-# for file in *.png.jpg ; do mv $file $(echo $file | sed s/png.jpg/png/); done
-
-
-
-
-
-
-
-# # ls *.png | xargs -n 1 -I{} | parallel -j+0 /usr/bin/convert {} -strip -quality 50% {}.jpig
-# ls *.png | time parallel xargs -n 1 -I{} /usr/bin/convert {} -strip -quality 50% {}.jpg
-
-# #ls *.png.jpg | xargs -I{} -n 1 parallel -j+0 mv {} $(echo {} | sed s/png.jpg/png/)
-
-# #ls *.png.jpg | xargs -n 1 -I{} mv {} $(echo {} | sed s/png.jpg/png/)
-
-
-# parallel /usr/bin/convert -reducesize 
-
-
-# ls *.png | time parallel xargs -n 1 -I{} /usr/bin/convert {} -strip -quality 50% {}.jpg
-# comments start here
-# start script like
-# ./script no_args
-# if args then show usage info
-#    check to see if there are any image files, if not error
-#    if everything is all right warn and tell to press enter to proceed and q to quit.
-      
-#       check to see if the filenames need to be sanitized
-#       warn and do it
-
-#       proceed.
-
-      
  # Usage info
 show_help(){
 
@@ -55,18 +12,18 @@ show_help(){
 EOF
  }
 
- program0(){
+ check_program_arguments(){
      is_this_null=$1
      if [ -z $is_this_null ]
      then
 	 #everything is ok
-	 sanitize
+	 check_presence_of_files
      else
-	 program1 $is_this_null
+	 parse_program_arguments $is_this_null
      fi
  }
 
- program1(){
+ parse_program_arguments(){
  while getopts h: opt; do
      case $opt in
          h)
@@ -82,7 +39,7 @@ EOF
 # shift "$((OPTIND-1))"   # Discard the options and sentinel --
 }
 
-sanitize(){
+check_presence_of_files(){
     error=
     
     if [ ! -z $(ls *.jpg) ] || [ ! -z $(ls *.png) ]
@@ -125,15 +82,20 @@ else
 }
 
 fix_spaces_in_filenames(){
-    echo "this sed script will fix all your spaces in filenames"
-    for file in *\ *; do target="$(echo $file | sed -e 's/ /_/g')"; mv "$file" "$target"; done;
+    echo "Fixing spaces in filenames"
+    for file in *
+    do
+	target="$(echo $file | sed -e 's/ /_/g')"
+	mv "$file" "$target"
+    done
 
-main_command
+reduce_file_size
 }
 
-main_command(){
+reduce_file_size(){
 echo "reducing file size"
+# ls *.png | xargs -n 1 -I{} | parallel -j+0 /usr/bin/convert {} -strip -quality 50% {}.jpg
 }
 
+check_program_arguments $*
 
-program0 $*
