@@ -85,31 +85,24 @@ EOF
 sanitize(){
     error=
     
-    if [ -z $(ls *.jpg 1>/dev/null) ]
+    if [ ! -z $(ls *.jpg) ] || [ ! -z $(ls *.png) ]
     then
-	error=yes
+	error=no
 	
     else
-	error=no
-    fi
-
-    if [ -z $(ls *.png 1>/dev/null) ]
-    then
 	error=yes
-    else
-	error=no
     fi
-
     
-    if [ $error = "no" ]
+    if [ $error == "no" ]
     then
 	echo $error
 	ok
     else
+	echo "$error and hi"
 	exit 0;
     fi
 
-}
+} 2>/dev/null
 
 ok(){
 
